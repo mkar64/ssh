@@ -1,41 +1,63 @@
-# Termux SSH Auto Setup 🚀
+# Termux SSH & Audio Recording Toolset 🚀
 
-سكربت تلقائي لإعداد وتفعيل خادم SSH على تطبيق Termux (أندرويد) مع دعم الإقلاع التلقائي ومنع السكون.
+مجموعة سكربتات لتسهيل الإعداد والاتصال بـ Termux، تسجيل الصوت محلياً وعبر الشبكة، وسحب الصور والبيانات إلى اللابتوب.
 
-An automated script to configure and enable SSH server on Termux (Android) with auto-boot support and wake-lock to prevent sleep.
+A collection of utility scripts to automate setup, remote connection, audio recording, and synchronizing data (photos/recordings) from Termux to a laptop.
 
 ---
 
-## التشغيل السريع / Quick Installation
+## السكربتات المتوفرة / Available Scripts
 
-يمكنك تشغيل السكربت مباشرة داخل تطبيق Termux عبر الأمر التالي:
-You can run the script directly inside the Termux app using the following command:
+### 1. `setup.sh` (الإعداد الأولي وخادم SSH)
+يقوم بتهيئة وتثبيت الحزم المطلوبة (`openssh`, `autossh`, `rsync`, `curl`, `termux-api`) وضبط خدمة الإقلاع التلقائي ومنع السكون.
 
+**التشغيل السريع في Termux:**
 ```bash
-curl -sL https://raw.githubusercontent.com/mkar64/ssh/main/setup_ssh.sh | bash
+curl -sL https://raw.githubusercontent.com/mkar64/ssh/main/setup.sh | bash
 ```
 
 ---
 
-## ماذا يفعل هذا السكربت؟ / What does this script do?
+### 2. `record.sh` (بدء وإيقاف تسجيل الصوت)
+يتحكم في التقاط وتسجيل الصوت عبر سطر الأوامر (باستخدام ميكروفون الهاتف).
 
-1. **صلاحيات الذاكرة / Storage Permission:** يطلب الإذن للوصول إلى ذاكرة الهاتف (`termux-setup-storage`).
-2. **تثبيت المتطلبات / Install Dependencies:** يقوم بتحديث الحزم وتثبيت `openssh`, `autossh`, `rsync`, `curl`.
-3. **أمان SSH / SSH Security:** ينشئ المجلدات اللازمة ويضبط أذونات الأمان للمفاتيح (`chmod 700` و `chmod 600`).
-4. **الإقلاع التلقائي / Auto-Boot:** ينشئ سكربت التشغيل التلقائي متوافق مع إضافة **Termux:Boot** ليعمل خادم SSH بمجرد تشغيل الهاتف.
-5. **منع السكون / Wake Lock:** يقوم بتشغيل `termux-wake-lock` لضمان عدم توقف الخدمة عند إغلاق الشاشة.
-6. **الاتصال وسرية الحساب / Connection & Password:** يعرض معلومات الاتصال بالخادم ويطلب تعيين كلمة مرور جديدة لجهازك.
+**الاستخدام داخل Termux (أو عبر SSH من اللابتوب):**
+* **بدء التسجيل / Start Recording:**
+  ```bash
+  ./record.sh start
+  ```
+* **إيقاف التسجيل / Stop Recording:**
+  ```bash
+  ./record.sh stop
+  ```
+* **حالة التسجيل / Check Status:**
+  ```bash
+  ./record.sh status
+  ```
+* **التبديل التلقائي / Toggle (بدء/إيقاف حسب الحالة):**
+  ```bash
+  ./record.sh
+  ```
+
+*ملاحظة: تحفظ التسجيلات في مجلد `~/recordings` بصيغة `.m4a`.*
 
 ---
 
-## طريقة الاتصال / Connection Info
+### 3. `sync_photos.sh` (سحب الصور والتسجيلات للابتوب)
+سكربت يعمل **على جهاز اللابتوب** يقوم بسحب كافة الصور الملتقطة بكاميرا الهاتف وتنزيل التسجيلات الصوتية المسجلة وحفظها محلياً باستخدام `rsync`.
 
-بعد اكتمال تشغيل السكربت، يمكنك الاتصال من الحاسوب الشخصي عبر المنفذ `8022`:
-After execution, connect from your computer using port `8022`:
-
+**الاستخدام على اللابتوب:**
 ```bash
-ssh -p 8022 <username>@<ip_address>
+./sync_photos.sh <IP_ADDRESS> [USER_NAME]
 ```
+**مثال:**
+```bash
+./sync_photos.sh 192.168.1.15
+```
+*سيرفع الملفات إلى مجلد محلي باسم `synced_data`.*
 
-> [!NOTE]
-> تأكد من تثبيت تطبيق [Termux:Boot](https://github.com/termux/termux-boot) من F-Droid إذا كنت تريد تفعيل ميزة الإقلاع التلقائي عند تشغيل الهاتف.
+---
+
+## المتطلبات / Prerequisites
+* لتسجيل الصوت عبر `record.sh` يجب تثبيت تطبيق **Termux:API** من F-Droid وإعطائه صلاحية الميكروفون.
+* لتشغيل الإقلاع التلقائي، يجب تثبيت تطبيق **Termux:Boot** من F-Droid.
