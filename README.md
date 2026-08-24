@@ -47,7 +47,7 @@ curl -sL https://raw.githubusercontent.com/mkar64/ssh/main/setup.sh | bash
 **الاستخدام:**
 1. أولاً، شغل أمر الاستقبال على اللابتوب (يجب أن يكون لديك برنامج `ffplay` أو `aplay`):
    ```bash
-   nc -l -p 12345 | ffplay -f s16le -ar 48000 -ac 1 -nodisp -
+   nc -l -p 12345 | ffplay -f s16le -ar 48000 -ch_layout mono -nodisp -
    ```
 2. ثانياً، شغل السكربت من داخل Termux مع كتابة IP اللابتوب:
    ```bash

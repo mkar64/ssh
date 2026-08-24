@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
     echo "  ./stream_mic.sh <LAPTOP_IP>"
     echo "=========================================="
     echo "قبل تشغيل هذا السكربت، شغل هذا الأمر على اللابتوب لاستقبال الصوت:"
-    echo "  nc -l -p 12345 | ffplay -f s16le -ar 48000 -ac 1 -nodisp -"
+    echo "  nc -l -p 12345 | ffplay -f s16le -ar 48000 -ch_layout mono -nodisp -"
     echo "=========================================="
     exit 1
 fi
