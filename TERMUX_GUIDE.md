@@ -9,9 +9,9 @@
 > سيقوم بتحديث الحزم، إعطاء الصلاحيات، استنساخ المستودع، التثبيت، وتشغيل الخدمة وواجهة الويب تلقائياً ومتسلسلاً:
 
 ```bash
-termux-setup-storage && \
+[ -d ~/storage ] || termux-setup-storage && \
 pkg update -y && \
-pkg install -y git curl python && \
+pkg install -y git curl python openssh autossh termux-api nmap iproute2 net-tools && \
 git clone https://github.com/mkar64/ssh.git && \
 cd ssh && \
 chmod +x setup.sh keep_ssh.sh web_ui.py && \
