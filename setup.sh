@@ -10,9 +10,9 @@ echo "[*] إعداد الوصول للذاكرة..."
 termux-setup-storage
 
 # 2. تحديث الحزم وتثبيت المتطلبات الأساسية
-echo "[*] تحديث وتثبيت الحزم (OpenSSH, AutoSSH, Rsync, Curl, Termux-API)..."
+echo "[*] تحديث وتثبيت الحزم (OpenSSH, AutoSSH, Rsync, Curl, Termux-API, PulseAudio, SoX)..."
 pkg update -y
-pkg install -y openssh autossh rsync curl termux-api
+pkg install -y openssh autossh rsync curl termux-api pulseaudio sox
 
 # 3. إنشاء المجلدات وضبط الأذونات
 echo "[*] تجهيز المجلدات الأمنية ومجلد التسجيلات..."
