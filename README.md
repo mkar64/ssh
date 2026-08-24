@@ -1,128 +1,90 @@
-# 🚀 SSH Remote Management & Connection Suite
-### نظام إدارة واتصال SSH المتكامل لأجهزة Android (Termux) وأنظمة Linux
+# Termux SSH & Audio Recording Toolset 🚀
 
-نظام شمولـي خفيف ومُحدث لإدارة اتصالات SSH والتشغيل الدائم مع واجهة تحكم ويب تفاعلية واكتشاف للشبكات المحلية.
+مجموعة سكربتات لتسهيل الإعداد والاتصال بـ Termux، تسجيل الصوت محلياً وعبر الشبكة، وسحب الصور والبيانات إلى اللابتوب.
 
----
-
-## 📌 الميزات الرئيسية (Key Features)
-
-- 📱 **دليل Termux المخصص (Termux Guide):**
-  يحتوي المستودع على دليل تفصيلي شامل مخصص لتطبيق Termux بملف [TERMUX_GUIDE.md](file:///home/ms/.gemini/antigravity-ide/scratch/anydesk-termux-web/TERMUX_GUIDE.md) يشرح الصلاحيات والأوامر والحزم المطلوبة.
-- ⚡ **القيم الافتراضية (Default Parameters):**
-  - **المنفذ الافتراضي (Port):** `3367`
-  - **الخادم الافتراضي (Host):** `mycontrolbox.duckdns.org`
-  - **المستخدم الافتراضي (User):** `ms`
-- 📱 **اكتشاف تلقائي لبيئة التشغيل (OS Auto-Detection):**
-  - **Android Termux:** تثبيت الحزم تلقائياً عبر `pkg install`.
-  - **Linux / Ubuntu / Debian:** تثبيت الحزم تلقائياً عبر `apt-get install`.
-- 📦 **تثبيت حزم دفعة واحدة (Batch Package Setup):**
-  `openssh`, `autossh`, `termux-api`, `curl`, `rsync`, `git`, `python3`, `nmap`, `iproute2`, `net-tools`, `fail2ban`.
-- 🔑 **توليد مفاتيح ed25519 وتصديرها:**
-  توليد تلقائي للمفتاح ونسخه للهدف بضغطة زر أو أمر واحد.
-- 🔄 **سكربت الاتصال المستمر (`keep_ssh.sh`):**
-  حلقة مراقبة بـ `autossh` لمنع انقطاع الجلسة وتفعيل `termux-wake-lock` لمنع سكون المعالج بالأندرويد.
-- 🌐 **واجهة تحكم ويب تفاعلية (`web_ui.py`):**
-  تدرج على المنفذ **8080** بدون أي مكتبات خارجية (Standard Python Library)، وتتضمن:
-  - أزرار التحكم السريع (Quick Action Buttons).
-  - اكتشاف عناوين الـ IP النشطة في الشبكة المحلية (LAN Network Discovery) واختيارها من قائمة منسدلة.
-  - تنفيذ الأوامر المباشرة وشاشة متابعة المخرجات (Live Terminal Log).
+A collection of utility scripts to automate setup, remote connection, audio recording, and synchronizing data (photos/recordings) from Termux to a laptop.
 
 ---
 
-## 🚀 أمر النسخ واللصق الشامل (All-in-One Termux Command)
+## السكربتات المتوفرة / Available Scripts
 
-يمكنك نسخ البلوك الكامل التالي ولصقه في **Termux** دفعة واحدة لتنفيذ كافة خطوات التثبيت والتشغيل بالتسلسل:
+### 1. `setup.sh` (الإعداد الأولي وخادم SSH)
+يقوم بتهيئة وتثبيت الحزم المطلوبة (`openssh`, `autossh`, `rsync`, `curl`, `termux-api`) وضبط خدمة الإقلاع التلقائي ومنع السكون.
 
+**التشغيل السريع في Termux:**
 ```bash
-termux-setup-storage && \
-pkg update -y && \
-pkg install -y git curl python && \
-git clone https://github.com/mkar64/ssh.git && \
-cd ssh && \
-chmod +x setup.sh keep_ssh.sh web_ui.py && \
-./setup.sh ms mycontrolbox.duckdns.org 3367 && \
-nohup ./keep_ssh.sh > /dev/null 2>&1 & \
-python3 web_ui.py
+curl -sL https://raw.githubusercontent.com/mkar64/ssh/main/setup.sh | bash
 ```
 
 ---
 
-## 🛠 التثبيت والتشغيل السريع (Quick Start)
+### 2. `record.sh` (بدء وإيقاف تسجيل الصوت)
+يتحكم في التقاط وتسجيل الصوت عبر سطر الأوامر (باستخدام ميكروفون الهاتف).
 
-### 1. تشغيل السكربت الشامل (Setup Script):
+**الاستخدام داخل Termux (أو عبر SSH من اللابتوب):**
+* **بدء التسجيل / Start Recording:**
+  ```bash
+  ./record.sh start
+  ```
+* **إيقاف التسجيل / Stop Recording:**
+  ```bash
+  ./record.sh stop
+  ```
+* **حالة التسجيل / Check Status:**
+  ```bash
+  ./record.sh status
+  ```
+* **التبديل التلقائي / Toggle (بدء/إيقاف حسب الحالة):**
+  ```bash
+  ./record.sh
+  ```
 
-يمكنك تشغيل السكربت بالقيم الافتراضية:
+*ملاحظة: تحفظ التسجيلات في مجلد `~/recordings` بصيغة `.m4a`.*
 
+### 3. `stream_mic.sh` (بث المايك مباشرة للابتوب)
+يقوم ببث الصوت مباشرة من ميكروفون الهاتف وتشغيله على اللابتوب بالوقت الفعلي (Live Streaming) باستخدام PulseAudio و SoX و Netcat.
+
+**الاستخدام:**
+1. أولاً، شغل أمر الاستقبال على اللابتوب (يجب أن يكون لديك برنامج `ffplay` أو `aplay`):
+   ```bash
+   nc -l -p 12345 | ffplay -f s16le -ar 48000 -ch_layout mono -nodisp -
+   ```
+2. ثانياً، شغل السكربت من داخل Termux مع كتابة IP اللابتوب:
+   ```bash
+   ./stream_mic.sh <LAPTOP_IP>
+   ```
+
+### 4. `take_photo.sh` (التقاط صورة)
+يقوم بالتقاط صورة صامتة من كاميرا الهاتف وحفظها في مجلد `~/photos`.
+
+**الاستخدام من داخل Termux (أو عبر SSH):**
+* **التقاط صورة بالكاميرا الخلفية (الافتراضية):**
+  ```bash
+  ./take_photo.sh
+  ```
+* **التقاط صورة بالكاميرا الأمامية:**
+  ```bash
+  ./take_photo.sh 1
+  ```
+
+---
+
+### 5. `sync_photos.sh` (سحب الصور والتسجيلات للابتوب)
+سكربت يعمل **على جهاز اللابتوب** يقوم بسحب كافة الصور الملتقطة بكاميرا الهاتف (DCIM والملتقطة يدوياً) وتنزيل التسجيلات الصوتية المسجلة وحفظها محلياً باستخدام `rsync`.
+
+**الاستخدام على اللابتوب:**
 ```bash
-chmod +x setup.sh
-./setup.sh
+./sync_photos.sh <IP_ADDRESS> [USER_NAME]
 ```
-
-أو تمرير متغيرات ديناميكية من التيرمينال:
-`./setup.sh <اسم_المستخدم> <الهوست/الدومين> <المنفذ>`
-
 **مثال:**
 ```bash
-./setup.sh ms mycontrolbox.duckdns.org 3367
+./sync_photos.sh 192.168.1.15
 ```
-
-أو عن طريق `curl` مباشرة:
-```bash
-curl -sL https://raw.githubusercontent.com/mkar64/ssh/main/setup.sh | bash -s -- ms mycontrolbox.duckdns.org 3367
-```
+*سيرفع الملفات إلى مجلد محلي باسم `synced_data` يحتوي على ثلاثة مجلدات فرعية: `photos` و `taken_photos` و `recordings`.*
 
 ---
 
-## 🔄 2. تشغيل خدمة الاتصال المستمر (Keep SSH)
-
-يقوم السكربت بإنشاء وتجهيز `keep_ssh.sh` تلقائياً. للتشغيل في الخلفية:
-
-```bash
-nohup ./keep_ssh.sh > /dev/null 2>&1 &
-```
-
-لإيقاف الجلسة أو إعادة تشغيلها:
-```bash
-pkill -f autossh
-```
-
----
-
-## 🌐 3. واجهة التحكم بالويب (Web UI)
-
-لتشغيل سيرفر الويب على المنفذ `8080`:
-
-```bash
-python3 web_ui.py
-```
-
-افتح المتصفح على العنوان:
-👉 **`http://localhost:8080`** أو **`http://<IP_الجهاز>:8080`**
-
-### الأزرار المتاحة بواجهة الويب:
-- 🔌 **فحص اتصال SSH:** تجربة الاتصال المباشر بالهدف المختار وتأكيد الاستجابة.
-- 📊 **حالة الخدمة:** عرض العمليات النشطة حالياً لجلسات `autossh`.
-- 🔄 **إعادة تشغيل autoSSH:** إعادة تشغيل جلسة الاتصال بالخلفية.
-- 🔒 **منع سكون الهاتف:** تفعيل `termux-wake-lock` على أندرويد.
-- 🔎 **فحص واكتشاف الأجهزة:** عمل Scan للشبكة المحلية وحصر الآيبيات النشطة بقائمة منسدلة اختيارية.
-- 🖥 **شاشة التنفيذ المباشر:** إدخال أي أمر SSH أو نظام وتشغيله مباشرة وعرض مخرجاته.
-
----
-
-## 📁 هيكلة المشروع (Project Structure)
-
-```text
-.
-├── setup.sh       # السكربت الرئيسي لتجهيز النظام والحزم والمفاتيح
-├── keep_ssh.sh    # سكربت المراقبة والاتصال المستمر بـ AutoSSH
-├── web_ui.py      # خادم الويب التفاعلي بـ Python (Port 8080)
-└── README.md      # دليل الاستخدام والتأثيث
-```
-
----
-
-## 🔒 الأمان والاستخدام (Security & Permissions)
-
-- يُنشئ السكربت مفتاح `ed25519` محمي بالتصاريح `600` والمجلد `700`.
-- يتم استخدام الخيار `StrictHostKeyChecking=accept-new` لقبول البصمة الأولى بأمان عند الاتصال بالأجهزة الجديدة.
+## المتطلبات / Prerequisites
+* لالتقاط الصور والتحكم بالصوت، يجب تثبيت حزم الصوت والميكروفون المطلوبة (يتم تثبيتها تلقائياً عبر `setup.sh`).
+* لتشغيل `record.sh` و `take_photo.sh` يجب تثبيت تطبيق **Termux:API** من F-Droid وإعطائه صلاحيات الميكروفون والكاميرا.
+* لتشغيل الإقلاع التلقائي، يجب تثبيت تطبيق **Termux:Boot** من F-Droid.
